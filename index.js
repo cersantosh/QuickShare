@@ -69,6 +69,7 @@ io.on("connection", (socket) => {
         userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
 
         onlineUsers.push({
+          _id : userInfo._id,
           [userInfo._id]: socket.id,
           ipAddress: userIpAddress,
         });
