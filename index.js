@@ -8,7 +8,7 @@ import messages from "./models/messages.js";
 import firebaseStorage from "./utils/firebase_initialize.js";
 import { ref, deleteObject } from "firebase/storage";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
+import { dirname, path } from "path";
 
 const app = express();
 app.use(cors());
