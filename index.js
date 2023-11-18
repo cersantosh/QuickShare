@@ -59,6 +59,7 @@ io.on("connection", (socket) => {
   io.emit("connected");
   socket.on("userConnected", (userInfo) => {
     if (socket.id && userInfo) {
+      console.log("online users", onlineUsers);
       const isSameIdExist = onlineUsers.filter(
         (user) => user._id === userInfo._id
       );
