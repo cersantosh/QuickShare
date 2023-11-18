@@ -5,9 +5,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "node .",
+    "start": "node index.js",
     "dev": "nodemon .",
-    "heroku-postbuild": "cd frontend && npm install && npm run build"
+    "heroku-postbuild": "npm install && cd frontend && npm install && npm run build"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
