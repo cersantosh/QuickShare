@@ -1,8 +1,8 @@
 const port = "8000";
-const hostname = `https://quickshare-8ddc6cd38e83.herokuapp.com/`;
+const hostname = process.env.NODE_ENV === "production" ? `https://quickshare-8ddc6cd38e83.herokuapp.com/` : "http://localhost:8000";
 
 // users related
-const users = `/users`;
+const users = `${hostname}/users`;
 const readUserById = `${users}/read_user`;
 const readUserByDataURL = `${users}/fetch_user`;
 const allUsers = `${users}/all_users`;
@@ -12,7 +12,7 @@ const editUserURL = `${users}/edit_user`;
 const getUploadedFiles = `${hostname}/shared_files`;
 
 // message related
-const messages = `/messages`;
+const messages = `${hostname}/messages`;
 const addMessage = `${messages}/add_message`;
 const fetchMessageByData = `${messages}/fetch_message`;
 const editMessageURL = `${messages}/edit_message`;

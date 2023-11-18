@@ -21,6 +21,7 @@ class UsersController {
   }
 
   async readUserById(req, res) {
+    console.log("reading user");
     try {
       const { id } = req.params;
       const response = await users.findById(id);

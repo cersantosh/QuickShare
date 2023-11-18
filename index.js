@@ -7,8 +7,8 @@ import { Server } from "socket.io";
 import messages from "./models/messages.js";
 import firebaseStorage from "./utils/firebase_initialize.js";
 import { ref, deleteObject } from "firebase/storage";
-import path from 'path';
-import {fileURLToPath} from 'url';
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 app.use(cors());
@@ -25,8 +25,7 @@ if (process.env.NODE_ENV === "production") {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     // res.sendFile("./frontend/build/index.html");
-    res.sendFile(path.join(__dirname, '/frontend/build/index.html'));
-
+    res.sendFile(path.join(__dirname, "/frontend/build/index.html"));
   });
 } else {
   app.get("/", (req, res) => {
@@ -47,17 +46,42 @@ const server = app.listen(PORT, async () => {
   console.log(`Server started on port ${PORT}`);
 });
 
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000"],
+  },
+});
 
-const users = new Map();
+const onlineUsers = [];
 
 io.on("connection", (socket) => {
   console.log("socket connection established");
   io.emit("connected");
-  socket.on("userConnected", (user) => {
-    if (socket.id && user) {
-      users.set(user._id, socket.id);
-      io.emit("updateOnlineUsers", user);
+  socket.on("userConnected", (userInfo) => {
+    if (socket.id && userInfo) {
+      let userIpAddress = socket.handshake.address;
+      const userIpWithoutPort = userIpAddress.split(":")[0];
+      userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
+
+      onlineUsers.push({ [userInfo._id]: socket.id, ipAddress: userIpAddress });
+
+      const isSameIdExist = onlineUsers.filter(
+        (user) => user._id === userInfo._id
+      );
+
+      if (onlineUsers.length > 0 && isSameIdExist.length > 1) {
+        const indexToDelete = onlineUsers.findIndex(
+          (user) => user._id === isSameIdExist[0]._id
+        );
+        onlineUsers.splice(indexToDelete, 1);
+      }
+
+      socket.join(userIpAddress);
+      const usersWithSameIP = onlineUsers.filter(
+        (user) => user.ipAddress === userIpAddress
+      );
+
+      io.to(userIpAddress).emit("updateOnlineUsers", usersWithSameIP);
     }
   });
   socket.on("userDisconnected", (userId) => {

@@ -266,6 +266,7 @@ const ChatScreen = () => {
   }, [selectedPersonId]);
 
   useEffect(() => {
+    console.log(hostname);
     socket.current = io(hostname);
     if (socket.current) {
       socket.current.on("connected", async () => {
@@ -294,25 +295,15 @@ const ChatScreen = () => {
         setEditedMessage(data);
       });
 
-      socket.current.on("updateOnlineUsers", (userInfo) => {
-        setAllUsers((onlineUsers) => {
-          const tempUsers = [...onlineUsers];
-          tempUsers.push(userInfo);
-          const isMyIdExist = tempUsers.findIndex((user) => user._id === id);
-          const isSameIdExist = tempUsers.filter(
-            (user) => user._id === userInfo._id
-          );
-          if (tempUsers.length > 0 && isMyIdExist !== -1) {
-            tempUsers.splice(isMyIdExist, 1);
+      socket.current.on("updateOnlineUsers", (onlineUsers) => {
+
+        const isMyIdExist = onlineUsers.findIndex((user) => user._id === id);
+          if (onlineUsers.length > 0 && isMyIdExist !== -1) {
+            onlineUsers.splice(isMyIdExist, 1);
           }
-          if (tempUsers.length > 0 && isSameIdExist.length > 1) {
-            const indexToDelete = tempUsers.findIndex(
-              (user) => user._id === isSameIdExist[0]._id
-            );
-            tempUsers.splice(indexToDelete, 1);
-          }
-          return tempUsers;
-        });
+          setAllUsers(onlineUsers);
+
+    
       });
 
       socket.current.on("deleteOnlineUsers", (userId) => {
