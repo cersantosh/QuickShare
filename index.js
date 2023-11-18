@@ -67,7 +67,7 @@ io.on("connection", (socket) => {
         let userIpAddress = socket.handshake.address;
         const userIpWithoutPort = userIpAddress.split(":")[0];
         userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
-
+        console.log("user ip address", userIpAddress);
         onlineUsers.push({
           _id : userInfo._id,
           [userInfo._id]: socket.id,
@@ -78,6 +78,7 @@ io.on("connection", (socket) => {
         const usersWithSameIP = onlineUsers.filter(
           (user) => user.ipAddress === userIpAddress
         );
+        console.log("users with same ip", usersWithSameIP);
 
         io.to(userIpAddress).emit("updateOnlineUsers", usersWithSameIP);
       }
