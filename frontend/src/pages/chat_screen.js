@@ -296,6 +296,7 @@ const ChatScreen = () => {
       });
 
       socket.current.on("updateOnlineUsers", (onlineUsers) => {
+        console.log("online users in client", onlineUsers)
 
         const isMyIdExist = onlineUsers.findIndex((user) => user._id === id);
           if (onlineUsers.length > 0 && isMyIdExist !== -1) {
