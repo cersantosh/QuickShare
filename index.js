@@ -59,29 +59,27 @@ io.on("connection", (socket) => {
   io.emit("connected");
   socket.on("userConnected", (userInfo) => {
     if (socket.id && userInfo) {
-      let userIpAddress = socket.handshake.address;
-      const userIpWithoutPort = userIpAddress.split(":")[0];
-      userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
-
-      onlineUsers.push({ [userInfo._id]: socket.id, ipAddress: userIpAddress });
-
       const isSameIdExist = onlineUsers.filter(
         (user) => user._id === userInfo._id
       );
 
-      if (onlineUsers.length > 0 && isSameIdExist.length > 1) {
-        const indexToDelete = onlineUsers.findIndex(
-          (user) => user._id === isSameIdExist[0]._id
+      if (isSameIdExist.length == 0) {
+        let userIpAddress = socket.handshake.address;
+        const userIpWithoutPort = userIpAddress.split(":")[0];
+        userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
+
+        onlineUsers.push({
+          [userInfo._id]: socket.id,
+          ipAddress: userIpAddress,
+        });
+
+        socket.join(userIpAddress);
+        const usersWithSameIP = onlineUsers.filter(
+          (user) => user.ipAddress === userIpAddress
         );
-        onlineUsers.splice(indexToDelete, 1);
+
+        io.to(userIpAddress).emit("updateOnlineUsers", usersWithSameIP);
       }
-
-      socket.join(userIpAddress);
-      const usersWithSameIP = onlineUsers.filter(
-        (user) => user.ipAddress === userIpAddress
-      );
-
-      io.to(userIpAddress).emit("updateOnlineUsers", usersWithSameIP);
     }
   });
   socket.on("userDisconnected", (userId) => {
