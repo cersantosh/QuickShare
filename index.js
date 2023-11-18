@@ -77,8 +77,8 @@ io.on("connection", (socket) => {
           ipAddress: userIpAddress,
         });
 
-        socket.join(userIpAddress);
       }
+      socket.join(userIpAddress);
       const usersWithSameIP = onlineUsers.filter(
         (user) => user.ipAddress === userIpAddress
       );
