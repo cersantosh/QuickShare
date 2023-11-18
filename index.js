@@ -63,14 +63,14 @@ io.on("connection", (socket) => {
       const isSameIdExist = onlineUsers.filter(
         (user) => user._id === userInfo._id
       );
+      let userIpAddress =
+        socket.request.headers["x-forwarded-for"] ||
+        socket.request.connection.remoteAddress;
+      const userIpWithoutPort = userIpAddress.split(":")[0];
+      userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
+      console.log("user ip address", userIpAddress);
 
       if (isSameIdExist.length == 0) {
-        let userIpAddress =
-          socket.request.headers["x-forwarded-for"] ||
-          socket.request.connection.remoteAddress;
-        const userIpWithoutPort = userIpAddress.split(":")[0];
-        userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
-        console.log("user ip address", userIpAddress);
         onlineUsers.push({
           _id: userInfo._id,
           [userInfo._id]: socket.id,
