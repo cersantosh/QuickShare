@@ -1,5 +1,5 @@
 const port = "8000";
-const hostname = `http://localhost:${port}`;
+const hostname = `https://quickshare-8ddc6cd38e83.herokuapp.com/`;
 
 // users related
 const users = `/users`;

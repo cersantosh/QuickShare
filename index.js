@@ -7,7 +7,6 @@ import { Server } from "socket.io";
 import messages from "./models/messages.js";
 import firebaseStorage from "./utils/firebase_initialize.js";
 import { ref, deleteObject } from "firebase/storage";
-import path from "path";
 
 const app = express();
 app.use(cors());
@@ -43,7 +42,7 @@ const server = app.listen(PORT, async () => {
   console.log(`Server started on port ${PORT}`);
 });
 
-const io = new Server(server, {});
+const io = new Server(server);
 
 const users = new Map();
 
