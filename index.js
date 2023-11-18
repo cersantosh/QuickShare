@@ -53,6 +53,7 @@ const io = new Server(server, {
 });
 
 const onlineUsers = [];
+const users = new Map();
 
 io.on("connection", (socket) => {
   console.log("socket connection established");
@@ -71,6 +72,7 @@ io.on("connection", (socket) => {
       console.log("user ip address", userIpAddress);
 
       if (isSameIdExist.length == 0) {
+        users.set(userInfo._id, socket.id)
         onlineUsers.push({
           [userInfo._id]: socket.id,
           ipAddress: userIpAddress,
