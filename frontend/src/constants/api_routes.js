@@ -1,5 +1,5 @@
 const port = "8000";
-const hostname = process.env.NODE_ENV === "production" ? `https://quickshare-8ddc6cd38e83.herokuapp.com/` : "http://localhost:8000";
+const hostname = process.env.NODE_ENV === "production" ? `https://quickshare-8ddc6cd38e83.herokuapp.com` : "http://localhost:8000";
 
 // users related
 const users = `${hostname}/users`;
