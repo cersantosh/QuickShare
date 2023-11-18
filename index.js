@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === "production") {
     // const __filename = fileURLToPath(import.meta.url);
     // const __dirname = dirname(__filename);
     // res.sendFile(path.resolve(__dirname, "frontend/build/index.html"));
-    res.sendFile("frontend/build/index.html");
+    res.sendFile("./frontend/build/index.html");
 
   });
 } else {
