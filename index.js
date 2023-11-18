@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import messages from "./models/messages.js";
 import firebaseStorage from "./utils/firebase_initialize.js";
 import { ref, deleteObject } from "firebase/storage";
+import path from "path";
 
 const app = express();
 app.use(cors());
@@ -20,7 +21,9 @@ app.use("/messages", messageRouter);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("frontend/build"));
   app.get("*", (req, res) => {
-    res.sendFile("frontend/build/index.html");
+    // res.sendFile("frontend/build/index.html");
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+
   });
 } else {
   app.get("/", (req, res) => {
@@ -38,12 +41,10 @@ const server = app.listen(PORT, async () => {
   } catch (error) {
     console.log("error while connecting to database", error);
   }
-  console.log(`Server started on port ${process.env.PORT}`);
+  console.log(`Server started on port ${PORT}`);
 });
 
-const io = new Server(server, {
- 
-});
+const io = new Server(server, {});
 
 const users = new Map();
 
