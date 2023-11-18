@@ -8,7 +8,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: localStorage.getItem("token") ? <SelectAvatar /> : <Login />,
+    // element: localStorage.getItem("token") ? <SelectAvatar /> : <Login />,
+    element: <Login />
   },
   {
     path: "/login",
