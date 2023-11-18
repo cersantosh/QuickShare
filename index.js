@@ -78,13 +78,13 @@ io.on("connection", (socket) => {
         });
 
         socket.join(userIpAddress);
-        const usersWithSameIP = onlineUsers.filter(
-          (user) => user.ipAddress === userIpAddress
-        );
-        console.log("users with same ip", usersWithSameIP);
-
-        io.to(userIpAddress).emit("updateOnlineUsers", usersWithSameIP);
       }
+      const usersWithSameIP = onlineUsers.filter(
+        (user) => user.ipAddress === userIpAddress
+      );
+      console.log("users with same ip", usersWithSameIP);
+
+      io.to(userIpAddress).emit("updateOnlineUsers", usersWithSameIP);
     }
   });
   socket.on("userDisconnected", (userId) => {
