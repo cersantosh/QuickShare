@@ -65,12 +65,14 @@ io.on("connection", (socket) => {
       );
 
       if (isSameIdExist.length == 0) {
-        let userIpAddress = socket.handshake.address;
+        let userIpAddress =
+          socket.request.headers["x-forwarded-for"] ||
+          socket.request.connection.remoteAddress;
         const userIpWithoutPort = userIpAddress.split(":")[0];
         userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
         console.log("user ip address", userIpAddress);
         onlineUsers.push({
-          _id : userInfo._id,
+          _id: userInfo._id,
           [userInfo._id]: socket.id,
           ipAddress: userIpAddress,
         });
