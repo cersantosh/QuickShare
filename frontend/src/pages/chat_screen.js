@@ -303,8 +303,6 @@ const ChatScreen = () => {
             onlineUsers.splice(isMyIdExist, 1);
           }
           setAllUsers(onlineUsers);
-
-    
       });
 
       socket.current.on("deleteOnlineUsers", (userId) => {

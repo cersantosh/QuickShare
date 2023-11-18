@@ -72,9 +72,9 @@ io.on("connection", (socket) => {
 
       if (isSameIdExist.length == 0) {
         onlineUsers.push({
-          _id: userInfo._id,
           [userInfo._id]: socket.id,
           ipAddress: userIpAddress,
+          ...userInfo
         });
 
       }
