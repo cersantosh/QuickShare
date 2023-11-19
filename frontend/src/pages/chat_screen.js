@@ -313,7 +313,6 @@ const ChatScreen = () => {
       socket.current.emit("userDisconnected", id);
     });
     return () => {
-      socket.current.emit("userDisconnected", id);
       window.removeEventListener("beforeunload", () => {
         socket.current.emit("userDisconnected", id);
       });

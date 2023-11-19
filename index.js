@@ -57,6 +57,14 @@ const users = new Map();
 
 io.on("connection", (socket) => {
   console.log("socket connection established");
+
+  let userIpAddress =
+    socket.request.headers["x-forwarded-for"] ||
+    socket.request.socket.remoteAddress;
+  const userIpWithoutPort = userIpAddress.split(":")[0];
+  userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
+  console.log("user ip address", userIpAddress);
+
   io.emit("connected");
   socket.on("userConnected", (userInfo) => {
     if (socket.id && userInfo) {
@@ -64,21 +72,14 @@ io.on("connection", (socket) => {
       const isSameIdExist = onlineUsers.filter(
         (user) => user._id === userInfo._id
       );
-      let userIpAddress =
-        socket.request.headers["x-forwarded-for"] ||
-        socket.request.socket.remoteAddress;
-      const userIpWithoutPort = userIpAddress.split(":")[0];
-      userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
-      console.log("user ip address", userIpAddress);
 
       if (isSameIdExist.length == 0) {
-        users.set(userInfo._id, socket.id)
+        users.set(userInfo._id, socket.id);
         onlineUsers.push({
           [userInfo._id]: socket.id,
           ipAddress: userIpAddress,
-          ...userInfo
+          ...userInfo,
         });
-
       }
       socket.join(userIpAddress);
       const usersWithSameIP = onlineUsers.filter(
@@ -92,10 +93,13 @@ io.on("connection", (socket) => {
   socket.on("userDisconnected", (userId) => {
     console.log("user is disconnected", userId);
     const indexToDelete = onlineUsers.findIndex((user) => user._id === userId);
-    if(indexToDelete != -1){
+    if (indexToDelete != -1) {
       onlineUsers.splice(indexToDelete, 1);
     }
-    io.emit("deleteOnlineUsers", onlineUsers);
+    const usersWithSameIP = onlineUsers.filter(
+      (user) => user.ipAddress === userIpAddress
+    );
+    io.to(userIpAddress).emit("deleteOnlineUsers", usersWithSameIP);
   });
   socket.on("sendMessage", (data) => {
     socket.to(users.get(data.receiver._id)).emit("messageReceived", data);
