@@ -305,24 +305,15 @@ const ChatScreen = () => {
           setAllUsers(onlineUsers);
       });
 
-      socket.current.on("deleteOnlineUsers", (userId) => {
-        setAllUsers((onlineUsers) => {
-          const tempUsers = [...onlineUsers];
-          const indexToDelete = tempUsers.findIndex(
-            (user) => user._id === userId
-          );
-          console.log("index to delete: " + indexToDelete);
-          if (indexToDelete != -1) {
-            tempUsers.splice(indexToDelete, 1);
-          }
-          return tempUsers;
-        });
+      socket.current.on("deleteOnlineUsers", (onlineUsers) => {
+        setAllUsers(onlineUsers);
       });
     }
     window.addEventListener("beforeunload", () => {
       socket.current.emit("userDisconnected", id);
     });
     return () => {
+      socket.current.emit("userDisconnected", id);
       window.removeEventListener("beforeunload", () => {
         socket.current.emit("userDisconnected", id);
       });

@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
       );
       let userIpAddress =
         socket.request.headers["x-forwarded-for"] ||
-        socket.request.connection.remoteAddress;
+        socket.request.socket.remoteAddress;
       const userIpWithoutPort = userIpAddress.split(":")[0];
       userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
       console.log("user ip address", userIpAddress);
@@ -91,7 +91,11 @@ io.on("connection", (socket) => {
   });
   socket.on("userDisconnected", (userId) => {
     console.log("user is disconnected", userId);
-    io.emit("deleteOnlineUsers", userId);
+    const indexToDelete = onlineUsers.findIndex((user) => user._id === userId);
+    if(indexToDelete != -1){
+      onlineUsers.splice(indexToDelete, 1);
+    }
+    io.emit("deleteOnlineUsers", onlineUsers);
   });
   socket.on("sendMessage", (data) => {
     socket.to(users.get(data.receiver._id)).emit("messageReceived", data);
