@@ -318,10 +318,14 @@ const ChatScreen = () => {
       socket.current.emit("userDisconnected", id);
     });
 
-    const handleVisibilityChange = () => {
+    const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden') {
         // User went offline (tab or app is not visible)
         socket.current.emit('userDisconnected', id);
+      }
+      else{
+        const data = await new UsersMethods().readUserById(id);
+        socket.current.emit("userConnected", data);
       }
     };
 
