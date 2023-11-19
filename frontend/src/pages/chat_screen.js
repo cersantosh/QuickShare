@@ -306,6 +306,10 @@ const ChatScreen = () => {
       });
 
       socket.current.on("deleteOnlineUsers", (onlineUsers) => {
+        const isMyIdExist = onlineUsers.findIndex((user) => user._id === id);
+        if (onlineUsers.length > 0 && isMyIdExist !== -1) {
+          onlineUsers.splice(isMyIdExist, 1);
+        }
         setAllUsers(onlineUsers);
       });
     }
