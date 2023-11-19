@@ -65,10 +65,12 @@ io.on("connection", (socket) => {
   userIpAddress = userIpWithoutPort.split(".").slice(0, 3).join("");
   console.log("user ip address", userIpAddress);
 
-  io.emit("connected");
+  socket.join(userIpAddress);
+  io.to(userIpAddress).emit("connected");
+
   socket.on("userConnected", (userInfo) => {
     if (socket.id && userInfo) {
-      console.log("online users", onlineUsers);
+      console.log("online users before adding", onlineUsers);
       const isSameIdExist = onlineUsers.filter(
         (user) => user._id === userInfo._id
       );
@@ -80,8 +82,9 @@ io.on("connection", (socket) => {
           ipAddress: userIpAddress,
           ...userInfo,
         });
+      console.log("online users after adding", onlineUsers);
+
       }
-      socket.join(userIpAddress);
       const usersWithSameIP = onlineUsers.filter(
         (user) => user.ipAddress === userIpAddress
       );
@@ -96,6 +99,7 @@ io.on("connection", (socket) => {
     if (indexToDelete != -1) {
       onlineUsers.splice(indexToDelete, 1);
     }
+    console.log("online users after disconnect", onlineUsers);
     const usersWithSameIP = onlineUsers.filter(
       (user) => user.ipAddress === userIpAddress
     );

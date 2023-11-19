@@ -314,10 +314,6 @@ const ChatScreen = () => {
       });
     }
 
-    window.addEventListener("beforeunload", () => {
-      socket.current.emit("userDisconnected", id);
-    });
-
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden') {
         // User went offline (tab or app is not visible)
@@ -332,11 +328,7 @@ const ChatScreen = () => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      socket.current.emit("userDisconnected", id);
       socket.current.disconnect();
-      window.removeEventListener("beforeunload", () => {
-        socket.current.emit("userDisconnected", id);
-      });
       document.removeEventListener('visibilitychange', handleVisibilityChange);
 
     };
