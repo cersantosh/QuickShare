@@ -296,13 +296,13 @@ const ChatScreen = () => {
       });
 
       socket.current.on("updateOnlineUsers", (onlineUsers) => {
-        console.log("online users in client", onlineUsers)
+        console.log("online users in client", onlineUsers);
 
         const isMyIdExist = onlineUsers.findIndex((user) => user._id === id);
-          if (onlineUsers.length > 0 && isMyIdExist !== -1) {
-            onlineUsers.splice(isMyIdExist, 1);
-          }
-          setAllUsers(onlineUsers);
+        if (onlineUsers.length > 0 && isMyIdExist !== -1) {
+          onlineUsers.splice(isMyIdExist, 1);
+        }
+        setAllUsers(onlineUsers);
       });
 
       socket.current.on("deleteOnlineUsers", (onlineUsers) => {
@@ -313,10 +313,14 @@ const ChatScreen = () => {
         setAllUsers(onlineUsers);
       });
     }
+
     window.addEventListener("beforeunload", () => {
       socket.current.emit("userDisconnected", id);
     });
+
     return () => {
+      socket.current.emit("userDisconnected", id);
+      socket.current.disconnect();
       window.removeEventListener("beforeunload", () => {
         socket.current.emit("userDisconnected", id);
       });
