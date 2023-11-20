@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
   console.log("user ip address", userIpAddress);
 
   socket.join(userIpAddress);
-  io.to(userIpAddress).emit("connected");
+  socket.emit("connected");
 
   socket.on("userConnected", (userInfo) => {
     if (socket.id && userInfo) {
