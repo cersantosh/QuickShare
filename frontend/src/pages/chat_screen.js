@@ -7,7 +7,9 @@ import { io } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { hostname } from "../constants/api_routes.js";
-
+import checkLogin from "../utils/check_login.js";
+import {useNavigate} from "react-router-dom";
+import NoInternetConnection from "./no_internet_connection.js";
 const Tooltip = ({
   messageId,
   socket,
@@ -130,6 +132,7 @@ const Tooltip = ({
 };
 
 const ChatScreen = () => {
+  const navigate = useNavigate();
   const [myData, setMyData] = useState(null);
   const [receiverData, setReceiverData] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
@@ -148,8 +151,12 @@ const ChatScreen = () => {
   const currentPersonId = useRef();
 
   const currentUser = getCurrentUser();
-  const myUsername = currentUser.username;
-  const id = currentUser._id;
+  let myUsername = null;
+  let id = null;
+  if(currentUser){
+     myUsername = currentUser.username;
+     id = currentUser._id;
+  }
 
   const fetchMyData = async () => {
     const userMethods = new UsersMethods();
@@ -252,8 +259,15 @@ const ChatScreen = () => {
     setEditReplyMessageId(null);
   };
 
+  const logout = () => {
+    console.log("calling logout");
+    localStorage.removeItem("token");
+    navigate("/login");
+  }
   useEffect(() => {
-    console.log("i am fetch my data calling");
+    if(!checkLogin()){
+      return navigate("/login");
+    }
     fetchMyData();
   }, []);
 
@@ -315,22 +329,20 @@ const ChatScreen = () => {
     }
 
     const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'hidden') {
+      if (document.visibilityState === "hidden") {
         // User went offline (tab or app is not visible)
-        socket.current.emit('userDisconnected', id);
-      }
-      else{
+        socket.current.emit("userDisconnected", id);
+      } else {
         const data = await new UsersMethods().readUserById(id);
         socket.current.emit("userConnected", data);
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       socket.current.disconnect();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
@@ -350,6 +362,31 @@ const ChatScreen = () => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage]);
 
+  const handleOnline = () => {
+    setIsOnline(true);
+  };
+  const handleOffline = () => {
+    setIsOnline(false);
+  };
+
+  useEffect(() => {
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  if (!isOnline) {
+    return <NoInternetConnection />;
+  }
+
+  if(myData && !myData.profilePhoto){
+    return navigate("/select_avatar");
+  }
+
   return (
     <Container>
       <div className="chat-people">
@@ -357,6 +394,7 @@ const ChatScreen = () => {
           <div className="avatar">
             <img src={myData.profilePhoto} alt="avatar" />
             <p>{myUsername}</p>
+            <i className="fa-solid fa-right-from-bracket logout-icon" onClick={logout} title="Logout"></i>
           </div>
         ) : (
           <img src={`assets/images/loading.gif`} alt="loader" />
@@ -382,7 +420,6 @@ const ChatScreen = () => {
               );
             })
           ) : (
-            // <img src="assets/images/loading.gif" alt="loader" />
             <p>No online users</p>
           )}
         </div>
@@ -507,6 +544,8 @@ const ChatScreen = () => {
       )}
     </Container>
   );
+
+  
 };
 
 export default ChatScreen;
@@ -558,6 +597,10 @@ const Container = styled.div`
         width: 30px;
         height: 30px;
         border-radius: 50%;
+      }
+      .logout-icon{
+        color: white;
+        cursor: pointer;
       }
     }
     .chat-people-list {

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../styles/signup.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import UsersMethods from "../controller/users.js";
-
+import checkLogin from "../utils/check_login.js";
+import NoInternetConnection from "./no_internet_connection.js";
 const SignUp = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -61,14 +62,40 @@ const SignUp = () => {
       const response = await userMethods.fetchUserByData({
         username: formData.username,
       });
-      if(response.length > 0){
-        alert("Username is already exists.")
-      }
-      else{
-        alert("Username is available.")
+      if (response.length > 0) {
+        alert("Username is already exists.");
+      } else {
+        alert("Username is available.");
       }
     }
   };
+
+  useEffect(() => {
+    if (checkLogin()) {
+      return navigate("/select_avatar");
+    }
+  }, []);
+
+  const handleOnline = () => {
+    setIsOnline(true);
+  };
+  const handleOffline = () => {
+    setIsOnline(false);
+  };
+
+  useEffect(() => {
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  if (!isOnline) {
+    return <NoInternetConnection />;
+  }
 
   return (
     <div className={styles["signup-form-container"]}>
@@ -90,10 +117,9 @@ const SignUp = () => {
               onClick={checkUsernameExistance}
             ></i>
           </div>
-          {usernameError && <p className={styles["error"]}>
-            Username is already exist.
-            </p>
-            }
+          {usernameError && (
+            <p className={styles["error"]}>Username is already exist.</p>
+          )}
         </div>
         <div className={styles["form-group"]}>
           <label htmlFor="password">Password</label>

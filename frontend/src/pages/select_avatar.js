@@ -6,7 +6,8 @@ import getCurrentUser from "../utils/get_current_user.js";
 import { useNavigate } from "react-router-dom";
 import firebaseStorage from "../utils/firebase_initialize.js";
 import { ref, getDownloadURL } from "firebase/storage";
-
+import checkLogin from "../utils/check_login.js";
+import NoInternetConnection from "./no_internet_connection.js";
 const SelectAvatar = () => {
   const avatars = [
     "avatar1.png",
@@ -58,7 +59,6 @@ const SelectAvatar = () => {
           });
           console.log("Profile photo uploaded successfully");
           navigate("/chat_screen");
-
         }
       }
     } catch (error) {
@@ -73,12 +73,38 @@ const SelectAvatar = () => {
   };
 
   useEffect(() => {
+    console.log("select avatar");
+    if(!checkLogin()){
+      return navigate("/login");
+    }
     fetchMyData();
   }, []);
+
+  const handleOnline = () => {
+    setIsOnline(true);
+  };
+  const handleOffline = () => {
+    setIsOnline(false);
+  };
+
+  useEffect(() => {
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  if (!isOnline) {
+    return <NoInternetConnection />;
+  }
 
   if (myData) {
     if (myData.profilePhoto) {
       navigate("/chat_screen");
+      return null;
     }
 
     return (

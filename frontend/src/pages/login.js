@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../styles/login.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import UsersMethods from "../controller/users.js";
+import checkLogin from "../utils/check_login.js";
+import NoInternetConnection from "./no_internet_connection.js";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ const Login = () => {
   const [usernameError, setUsernameError] = useState(false);
   const [passowrdError, setPassowrdError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -49,6 +52,32 @@ const Login = () => {
   const toggleFirstPassword = () => {
     setShowPassword(!showPassword);
   };
+
+  const handleOnline = () => {
+    console.log("i am online");
+    setIsOnline(true);
+  }
+  const handleOffline = () => {
+    console.log("i am offline")
+    setIsOnline(false);
+  }
+
+  useEffect(() => {
+    if (checkLogin()) {
+      return navigate("/select_avatar");
+    }
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  if(!isOnline){
+    return <NoInternetConnection/>
+  }
 
   return (
     <div className={styles["login-form-container"]}>
