@@ -6,7 +6,6 @@ import ChatScreen from "./pages/chat_screen.js";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import checkLogin from "./utils/check_login.js";
 import NotFound from "./pages/not_found.js";
-import NoInternetConnection from "./pages/no_internet_connection.js";
 
 const router = createBrowserRouter([
   {

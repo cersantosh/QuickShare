@@ -19,6 +19,8 @@ const SelectAvatar = () => {
   const [myData, setMyData] = useState(null);
   const [selectedFileImage, setSelectedFileImage] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
   const navigate = useNavigate();
 
   const handleImageChange = (event) => {

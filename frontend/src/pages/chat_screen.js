@@ -145,6 +145,7 @@ const ChatScreen = () => {
   const [editMessageId, setEditMessageId] = useState(null);
   const [editReplyMessageId, setEditReplyMessageId] = useState(null);
   const [replyMessageId, setReplyMessageId] = useState(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const input = useRef();
   const socket = useRef();

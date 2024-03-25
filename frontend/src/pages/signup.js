@@ -15,6 +15,7 @@ const SignUp = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setConfirmPassword] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
